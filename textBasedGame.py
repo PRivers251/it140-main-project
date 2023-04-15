@@ -177,12 +177,19 @@ Good luck brave hero!
 for letter in open_message:
     sys.stdout.write(letter)
     sys.stdout.flush()
-    time.sleep(0.05)
+    time.sleep(0.03)
+print()
+print()
+print('''You can move by typing go (direction).
+For example: go south, go north, go east, or go west.
 
+You can gather keys from the regions that contain them
+by using the command \'get key\'.
+''')
 input('Press ENTER/RETURN to begin your journey...')
 print()
 print()
-print('You are currently in {}'.format(user['location']))
+print('You are currently in {}. Which way do you want to  go first?'.format(user['location']))
 
 
 # defines the logic for the player movement
@@ -194,7 +201,7 @@ def player_movement(direction):
             print('Sorry we cannot go that way! Let\'s try a different direction.')
             print()
         new_location = get_direction if get_direction is not None else user['location']
-        print(new_location)
+        print('You are in {}. Which way do you want to go now?'.format(new_location))
         inventory = [i for i in user['items'] if len(user['items']) > 0]
         print('Inventory: {}'.format(inventory))
         if regions[new_location].item:
@@ -219,6 +226,7 @@ def get_player_command():
             continue
 
         elif player_command == 'exit':
+            print('You have given up on your journey...')
             exit()
 
         elif parse_player_command[0] == 'go':
@@ -229,6 +237,7 @@ def get_player_command():
             user['items'].append(regions[user['location']].item)
             print('{} is now in your travel sack.\nWhich way would you like to go from here?'.format(regions[user['location']].item))
             regions[user['location']].item = None
+            print('Inventory: {}'.format(user['items']))
             if len(user['items']) == 6:
                 print('CONGRATULATIONS!\n'
                       'You have collected all the keys, obtained the sword or Citrel,\n'
