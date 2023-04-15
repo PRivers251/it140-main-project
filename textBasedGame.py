@@ -11,6 +11,7 @@ class Region:
         self.item = item
         self.villain = villain
 
+
 # declares each Region object with parameters
 plains_of_avondale = Region(
     'Plains of Avondale',
@@ -26,8 +27,8 @@ northern_wasteland = Region(
     'The Northern Wasteland',
     'Dragon Back Mountains',
     'Plains of Avondale',
-    None,
     'Drakken Castle',
+    None,
     None,
     False
 )
@@ -138,33 +139,42 @@ regions = {
 }
 
 # sets initial player location and message
-player_location = plains_of_avondale.name
-print(
-    'You are currently in {}. \n'.format(player_location),
-    'You can move by typing go {direction}. \n',
-    'For example: \'go south\', \'go north\' etc.'
-)
+user = {
+    'location': plains_of_avondale.name,
+    'items': []
+}
 
+print(
+'''
+You are currently in {}.
+\nYou can move by typing go (direction).
+For example: \'go south\', \'go north\', etc.
+'''.format(user['location'])
+)
 
 
 # defines the logic for the player movement
 def player_movement(direction):
-    current_location = regions[player_location]
+    current_location = regions[user['location']]
     if direction in ['north', 'south', 'east', 'west']:
         get_direction = getattr(current_location, direction)
         if get_direction is None:
             print('Cannot go that way! Try a different direction.')
             print()
-        new_location = get_direction if get_direction is not None else player_location
+        new_location = get_direction if get_direction is not None else user['location']
         print(new_location)
-        return new_location
+        inventory = [i for i in user['items'] if len(user['items']) > 0]
+        print('Inventory: {}'.format(inventory))
+        if regions[new_location].item:
+            print('This region contains {}.'.format(regions[new_location].item))
 
+        return new_location
 
 
 # parses user input to get various user commands
 def get_player_command():
     get_command = True
-    valid_commands = ['go north', 'go south', 'go east', 'go west', 'exit']
+    valid_commands = ['go north', 'go south', 'go east', 'go west', 'get key', 'exit']
     while get_command is True:
         player_command = input().strip().lower()
         parse_player_command = player_command.split()
@@ -180,9 +190,11 @@ def get_player_command():
             direction = parse_player_command[1]
             return direction
 
+        elif player_command == 'get key':
+            user['items'].append(regions[user['location']].item)
+            print('{} is now in your travel sack.'.format(regions[user['location']].item))
+            regions[user['location']].item = None
 
-while player_location != 'exit':
-    player_location = player_movement(get_player_command())
-    if player_location == 'error':
-        print('Not a Valid Command Try Again')
-        continue
+
+while user['location']:
+    user['location'] = player_movement(get_player_command())
